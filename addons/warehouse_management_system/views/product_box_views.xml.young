@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vista de árbol para Product Box Line (Movement History) -->
+    <record id="view_product_box_line_tree" model="ir.ui.view">
+        <field name="name">product.box.line.tree</field>
+        <field name="model">product.box.line</field>
+        <field name="arch" type="xml">
+            <tree string="Movements">
+                <field name="create_date"/>
+                <field name="source_location_id"/>
+                <field name="destination_location_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista de formulario para Product Box -->
+    <record id="view_product_box_form" model="ir.ui.view">
+        <field name="name">product.box.form</field>
+        <field name="model">product.box</field>
+        <field name="arch" type="xml">
+            <form string="Product Box">
+                <header>
+                    <button name="action_move" string="Picking" type="object" class="btn-primary" 
+                            attrs="{'invisible': [('state', '=', 'outlocation')]}"/>
+                    <button name="action_put_in_target" string="Put In" type="object" class="btn-success"
+                            attrs="{'invisible': [('state', '=', 'inlocation')]}"/>
+                    <button name="action_clean_up" string="Clean Up" type="object" class="btn-warning"/>
+                    <field name="state" widget="statusbar" statusbar_visible="inlocation,outlocation"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="location_identification" readonly="1"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="Box Information">
+                            <field name="key"/>
+                            <field name="parent_location"/>
+                            <field name="rack_location"/>
+                        </group>
+                        <group string="Position (X, Y, Z)">
+                            <field name="pos_x"/>
+                            <field name="pos_y"/>
+                            <field name="pos_z"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Movement History">
+                            <field name="box_move_ids" widget="one2many_list"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista de árbol para Product Box -->
+    <record id="view_product_box_tree" model="ir.ui.view">
+        <field name="name">product.box.tree</field>
+        <field name="model">product.box</field>
+        <field name="arch" type="xml">
+            <tree string="Product Boxes">
+                <field name="location_identification"/>
+                <field name="pos_x"/>
+                <field name="pos_y"/>
+                <field name="pos_z"/>
+                <field name="parent_location"/>
+                <field name="state" decoration-success="state == 'inlocation'" decoration-warning="state == 'outlocation'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista de búsqueda para Product Box -->
+    <record id="view_product_box_search" model="ir.ui.view">
+        <field name="name">product.box.search</field>
+        <field name="model">product.box</field>
+        <field name="arch" type="xml">
+            <search string="Search Boxes">
+                <field name="location_identification"/>
+                <field name="parent_location"/>
+                <field name="pos_x"/>
+                <field name="pos_y"/>
+                <field name="pos_z"/>
+                <filter string="In Location" name="in_location" domain="[('state', '=', 'inlocation')]"/>
+                <filter string="Out of Location" name="out_location" domain="[('state', '=', 'outlocation')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Parent Location" name="group_location" context="{'group_by': 'parent_location'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Acción para Product Box -->
+    <record id="action_product_box" model="ir.actions.act_window">
+        <field name="name">Boxes</field>
+        <field name="res_model">product.box</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_in_location': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first storage box
+            </p>
+            <p>
+                Storage boxes (units) are the containers that hold library materials.<br/>
+                Each box has a unique identifier and 3D coordinates (X, Y, Z) in the warehouse.
+            </p>
+        </field>
+    </record>
+
+    <!-- Vista de formulario para Product Box Key -->
+    <record id="view_product_box_key_form" model="ir.ui.view">
+        <field name="name">product.box.key.form</field>
+        <field name="model">product.box.key</field>
+        <field name="arch" type="xml">
+            <form string="Box Key">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="key"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista de árbol para Product Box Key -->
+    <record id="view_product_box_key_tree" model="ir.ui.view">
+        <field name="name">product.box.key.tree</field>
+        <field name="model">product.box.key</field>
+        <field name="arch" type="xml">
+            <tree string="Box Keys">
+                <field name="name"/>
+                <field name="key"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Acción para Product Box Key -->
+    <record id="action_product_box_key" model="ir.actions.act_window">
+        <field name="name">Box Keys</field>
+        <field name="res_model">product.box.key</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a Box Key
+            </p>
+            <p>
+                Box keys define the naming convention for boxes.<br/>
+                Example: QBE1 = Querétaro, Biblioteca, Edificio 1
+            </p>
+        </field>
+    </record>
+
+</odoo>

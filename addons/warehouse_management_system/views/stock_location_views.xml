@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vista de formulario extendida para Stock Location -->
+    <record id="view_location_form_inherit" model="ir.ui.view">
+        <field name="name">stock.location.form.inherit</field>
+        <field name="model">stock.location</field>
+        <field name="inherit_id" ref="stock.view_location_form"/>
+        <field name="arch" type="xml">
+            <!-- Agregar campos al final del formulario -->
+            <xpath expr="//form//sheet" position="inside">
+                <group string="Warehouse Type" col="4">
+                    <field name="is_rack"/>
+                    <field name="is_box"/>
+                    <field name="is_dummy"/>
+                </group>
+                
+                <group string="3D Coordinates" invisible="is_box == False" col="6">
+                    <field name="pos_x" required="is_box == True"/>
+                    <field name="pos_y" required="is_box == True"/>
+                    <field name="pos_z" required="is_box == True"/>
+                </group>
+                
+                <group string="Box Assignment" invisible="is_box == False">
+                    <field name="box_id"/>
+                </group>
+                
+                <group string="Rack Configuration" invisible="is_rack == False">
+                    <field name="max_box"/>
+                </group>
+                
+                <group string="Dummy Configuration" invisible="is_dummy == False" col="4">
+                    <field name="max_box_dummy"/>
+                    <field name="limit"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Registro por defecto de configuración del middleware -->
+    <record id="middleware_config_default" model="middleware.config">
+        <field name="name">Middleware Local - Pruebas</field>
+        <field name="middleware_url">http://localhost:8000</field>
+        <field name="active">True</field>
+        <field name="timeout">10</field>
+        <field name="retry_count">3</field>
+        <field name="connection_status">not_tested</field>
+    </record>
+</odoo>

@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_box,product.box,model_product_box,stock.group_stock_user,1,1,1,1
+access_product_box_key,product.box.key,model_product_box_key,stock.group_stock_manager,1,1,1,1
+access_product_box_line,product.box.line,model_product_box_line,stock.group_stock_user,1,1,1,1
+access_box_movement_wizard,box.movement.wizard,model_box_movement_wizard,stock.group_stock_user,1,1,1,1
+access_display_final_dialog_box,display.final.dialog.box,model_display_final_dialog_box,stock.group_stock_user,1,1,1,1
+access_middleware_config,middleware.config,model_middleware_config,stock.group_stock_manager,1,1,1,1

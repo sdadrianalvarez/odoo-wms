@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Menú principal bajo Inventory -->
+    <menuitem id="menu_warehouse_management" 
+              name="Warehouse Management" 
+              parent="stock.menu_stock_root" 
+              sequence="50"/>
+    
+    <!-- Submenú Configuration -->
+    <menuitem id="menu_warehouse_config" 
+              name="Configuration" 
+              parent="menu_warehouse_management" 
+              sequence="100"/>
+    
+    <!-- Items del menú -->
+    <menuitem id="menu_product_box" 
+              name="Boxes" 
+              parent="menu_warehouse_management" 
+              action="action_product_box" 
+              sequence="10"/>
+    
+    <menuitem id="menu_box_movement" 
+              name="Box Movement" 
+              parent="menu_warehouse_config" 
+              action="action_box_movement_wizard" 
+              sequence="15"/>
+    
+    <menuitem id="menu_product_box_key" 
+              name="Box Keys" 
+              parent="menu_warehouse_config" 
+              action="action_product_box_key" 
+              sequence="10"/>
+    
+    <menuitem id="menu_middleware_config" 
+              name="Middleware Configuration" 
+              parent="menu_warehouse_config" 
+              action="action_middleware_config" 
+              sequence="20"/>
+
+</odoo>

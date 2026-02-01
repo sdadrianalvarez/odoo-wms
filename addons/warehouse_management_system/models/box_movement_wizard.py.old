@@ -1,0 +1,190 @@
+# -*- coding: utf-8 -*-
+
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+
+class BoxMovementWizard(models.TransientModel):
+    """
+    Wizard para realizar operaciones sobre cajas
+    """
+    _name = "box.movement.wizard"
+    _description = "Box Movement Wizard"
+
+    box_id = fields.Many2one("product.box", string="Box")
+    rack_id = fields.Many2one("stock.location", string="Rack", domain=[('is_rack', '=', True)])
+    x_coordinate = fields.Integer(string="X Coordinate")
+    y_coordinate = fields.Integer(string="Y Coordinate")
+    z_coordinate = fields.Integer(string="Z Coordinate")
+
+    def action_picking(self):
+        """Ejecutar operación de picking"""
+        if not self.box_id:
+            raise UserError(_('Please select a box first.'))
+        return self.box_id.action_move()
+
+    def action_put_in(self):
+        """Ejecutar operación de put-in"""
+        if not self.box_id:
+            raise UserError(_('Please select a box first.'))
+        return self.box_id.action_put_in_target()
+
+    def action_clean_up(self):
+        """
+        Ejecutar operación de clean-up
+        Reorganiza todas las cajas desde dummy a sus ubicaciones
+        """
+        # Buscar cajas en dummy
+        dummy = self.env['stock.location'].get_dummy_location()
+        if not dummy:
+            raise UserError(_('No dummy location found.'))
+        
+        out_location_boxes = self.env["product.box"].search([
+            ("state", "=", "outlocation"),
+            ("parent_location.usage", "=", "internal")
+        ], order="pos_y desc", limit=20)
+        
+        if not out_location_boxes:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('No Clean-up Needed'),
+                    'message': _('No boxes found that need to be returned.'),
+                    'type': 'info',
+                }
+            }
+        
+        # Usar el método de clean_up de la primera caja
+        return out_location_boxes[0].action_clean_up()
+
+    def action_box_naming(self):
+        """
+        Asignar automáticamente cajas a ubicaciones vacías
+        """
+        empty_boxes = self.env["product.box"].search([("parent_location", "=", False)])
+        assigned_count = 0
+        
+        for box in empty_boxes:
+            location = self.env["stock.location"].search([
+                ("is_box", "=", True),
+                ("box_id", "=", False)
+            ], limit=1)
+            
+            if location:
+                box.write({
+                    "parent_location": location.id,
+                    "pos_x": location.pos_x,
+                    "pos_y": location.pos_y,
+                    "pos_z": location.pos_z,
+                })
+                location.write({"box_id": box.id})
+                assigned_count += 1
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Boxes Assigned'),
+                'message': _('%d boxes were assigned to available locations.') % assigned_count,
+                'type': 'success',
+            }
+        }
+
+    def action_search_box(self):
+        """
+        Buscar caja por coordenadas
+        """
+        if not self.rack_id:
+            raise UserError(_('Please select a rack first.'))
+        
+        box = self.env["product.box"].search([
+            ("pos_x", "=", self.x_coordinate),
+            ("pos_y", "=", self.y_coordinate),
+            ("pos_z", "=", self.z_coordinate),
+            ("rack_location", "=", self.rack_id.id)
+        ], limit=1)
+        
+        if not box:
+            raise UserError(_(
+                'No box found at coordinates:\nX=%d, Y=%d, Z=%d'
+            ) % (self.x_coordinate, self.y_coordinate, self.z_coordinate))
+        
+        if box.parent_location.is_box:
+            message_text = _("Box Location identification: %s") % box.location_identification
+        else:
+            message_text = _(
+                "Box Location identification: %s\nCurrently Located at: %s"
+            ) % (box.location_identification, box.parent_location.name)
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Box Found'),
+                'message': message_text,
+                'type': 'info',
+                'sticky': True,
+            }
+        }
+
+    def action_search_location(self):
+        """
+        Buscar ubicación de una caja
+        """
+        if not self.box_id:
+            raise UserError(_('Please select a box first.'))
+        
+        box = self.box_id
+        
+        if box.parent_location.is_dummy:
+            message_text = _(
+                "X: %d, Y: %d, Z: %d\nCurrently located at dummy location"
+            ) % (box.pos_x, box.pos_y, box.pos_z)
+        else:
+            message_text = _(
+                "X: %d, Y: %d, Z: %d\nIn: %s"
+            ) % (box.pos_x, box.pos_y, box.pos_z, box.parent_location.location_id.name)
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Box Location'),
+                'message': message_text,
+                'type': 'info',
+                'sticky': True,
+            }
+        }
+
+    def action_outside_warehouse(self):
+        """
+        Mostrar cajas que están fuera del almacén
+        """
+        boxes = self.env["product.box"].search([
+            ("parent_location.usage", "!=", "internal")
+        ])
+        
+        if not boxes:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('All Boxes Inside'),
+                    'message': _('All boxes are currently inside the warehouse.'),
+                    'type': 'success',
+                }
+            }
+        
+        box_list = ", ".join([box.location_identification for box in boxes])
+        message_text = _("These boxes are out of warehouse:\n%s") % box_list
+        
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Boxes Outside Warehouse'),
+                'message': message_text,
+                'type': 'warning',
+                'sticky': True,
+            }
+        }

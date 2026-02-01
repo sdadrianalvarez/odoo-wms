@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vista de formulario para Box Movement Wizard -->
+    <record id="view_box_movement_wizard_form" model="ir.ui.view">
+        <field name="name">box.movement.wizard.form</field>
+        <field name="model">box.movement.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Box Movement Operations">
+                <sheet>
+                    <group>
+                        <group string="Select Box">
+                            <field name="box_id"/>
+                        </group>
+                        <group string="Search by Coordinates">
+                            <field name="rack_id"/>
+                            <field name="x_coordinate"/>
+                            <field name="y_coordinate"/>
+                            <field name="z_coordinate"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Operations">
+                            <group>
+                                <group string="Box Operations">
+                                    <button name="action_picking" string="Picking (Retrieve Box)" type="object" class="btn-primary"/>
+                                    <button name="action_put_in" string="Put In (Store Box)" type="object" class="btn-success"/>
+                                    <button name="action_clean_up" string="Clean Up Dummy Area" type="object" class="btn-warning"/>
+                                    <button name="action_box_naming" string="Auto-assign Boxes to Locations" type="object" class="btn-info"/>
+                                </group>
+                                <group string="Search Operations">
+                                    <button name="action_search_box" string="Search Box by Coordinates" type="object" class="btn-secondary"/>
+                                    <button name="action_search_location" string="Search Location of Box" type="object" class="btn-secondary"/>
+                                    <button name="action_outside_warehouse" string="Show Boxes Outside Warehouse" type="object" class="btn-secondary"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Help">
+                            <group>
+                                <div class="alert alert-info" role="alert">
+                                    <h4>Box Movement Operations</h4>
+                                    <p>
+                                        <b>Picking:</b> Retrieves a box from the warehouse. Automatically moves blocking boxes to dummy area.<br/><br/>
+                                        
+                                        <b>Put In:</b> Stores a box back in its assigned location. Moves blocking boxes if needed.<br/><br/>
+                                        
+                                        <b>Clean Up:</b> Returns all boxes from dummy area to their assigned locations.<br/><br/>
+                                        
+                                        <b>Auto-assign:</b> Automatically assigns boxes without locations to available spots.<br/><br/>
+                                        
+                                        <b>Search Box:</b> Find which box is at specific coordinates (X, Y, Z).<br/><br/>
+                                        
+                                        <b>Search Location:</b> Find where a specific box is located.<br/><br/>
+                                        
+                                        <b>Outside Warehouse:</b> Lists all boxes currently outside the warehouse.
+                                    </p>
+                                </div>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button string="Close" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acción para abrir el wizard -->
+    <record id="action_box_movement_wizard" model="ir.actions.act_window">
+        <field name="name">Box Movement</field>
+        <field name="res_model">box.movement.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Vista para Display Dialog Box -->
+    <record id="view_display_final_dialog_box_form" model="ir.ui.view">
+        <field name="name">display.final.dialog.box.form</field>
+        <field name="model">display.final.dialog.box</field>
+        <field name="arch" type="xml">
+            <form string="Message">
+                <sheet>
+                    <group>
+                        <field name="text" nolabel="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="OK" class="btn-primary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Vista de formulario para Middleware Config -->
+    <record id="view_middleware_config_form" model="ir.ui.view">
+        <field name="name">middleware.config.form</field>
+        <field name="model">middleware.config</field>
+        <field name="arch" type="xml">
+            <form string="Middleware Configuration">
+                <header>
+                    <button name="test_connection" string="Test Connection" type="object" class="btn-primary"/>
+                    <field name="connection_status" widget="statusbar" statusbar_visible="not_tested,success,failed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="test_connection" type="object" class="oe_stat_button" icon="fa-plug">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">Test</span>
+                                <span class="o_stat_text">Connection</span>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Configuration Name"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="Connection Settings">
+                            <field name="middleware_url" placeholder="https://your-middleware.ngrok.io"/>
+                            <field name="api_key" password="True"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Advanced Settings">
+                            <field name="timeout"/>
+                            <field name="retry_count"/>
+                            <field name="last_connection_test"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Help">
+                            <group>
+                                <div class="alert alert-info" role="alert">
+                                    <h4>Middleware URL Configuration</h4>
+                                    <p>
+                                        <b>For local testing:</b> Use ngrok or localtunnel<br/>
+                                        <code>ngrok http 8000</code> → Use the https URL provided<br/><br/>
+                                        
+                                        <b>For cloud deployment:</b><br/>
+                                        Railway.app: https://your-app.railway.app<br/>
+                                        Render.com: https://your-app.onrender.com<br/><br/>
+                                        
+                                        <b>Example URLs:</b><br/>
+                                        • http://localhost:8000 (local development)<br/>
+                                        • https://abc123.ngrok.io (ngrok tunnel)<br/>
+                                        • https://wms-middleware.railway.app (Railway)<br/>
+                                    </p>
+                                </div>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista de lista para Middleware Config -->
+    <record id="view_middleware_config_tree" model="ir.ui.view">
+        <field name="name">middleware.config.tree</field>
+        <field name="model">middleware.config</field>
+        <field name="arch" type="xml">
+            <list string="Middleware Configurations">
+                <field name="name"/>
+                <field name="middleware_url"/>
+                <field name="connection_status" decoration-success="connection_status == 'success'" decoration-danger="connection_status == 'failed'"/>
+                <field name="active"/>
+                <field name="last_connection_test"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Acción para Middleware Config -->
+    <record id="action_middleware_config" model="ir.actions.act_window">
+        <field name="name">Middleware Configuration</field>
+        <field name="res_model">middleware.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure Middleware Connection
+            </p>
+            <p>
+                Set up the connection to your middleware server.<br/>
+                The middleware handles communication between Odoo and the PLC.
+            </p>
+        </field>
+    </record>
+
+</odoo>
